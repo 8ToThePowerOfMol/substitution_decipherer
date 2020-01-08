@@ -1,0 +1,71 @@
+﻿<Window x:Class="substitution_decipherer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:substitution_decipherer"
+        mc:Ignorable="d"
+        Title="Substitution Decryptor" Height="450" Width="800">
+    
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Templates/Tab.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <local:MainViewModel x:Key="ViewModel"/>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <DockPanel DataContext="{StaticResource ViewModel}">
+        <DockPanel.InputBindings>
+            <KeyBinding Key="T" Modifiers="Ctrl" Command="{Binding AddTabCommand}"/>
+            <KeyBinding Key="W" Modifiers="Ctrl" Command="{Binding RemoveTabCommandFromMenu}"/>
+            <KeyBinding Key="D" Modifiers="Ctrl" Command="{Binding DuplicateTabCommand}"/>
+            <KeyBinding Key="Z" Modifiers="Ctrl" Command="{Binding UndoCommand}"/>
+            <KeyBinding Gesture="Ctrl+Shift+Z" Command="{Binding RedoCommand}"/>
+        </DockPanel.InputBindings>
+
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Close" InputGestureText="Alt+F4" Click="MenuItemClose_Click" />
+            </MenuItem>
+            <MenuItem Header="_Edit">
+                <MenuItem Header="_Undo" InputGestureText="Ctrl+Z" Command="{Binding UndoCommand}"/>
+                <MenuItem Header="_Redo" InputGestureText="Ctrl+Shift+Z" Command="{Binding RedoCommand}"/>
+                <MenuItem Header="_New Tab" InputGestureText="Ctrl+T" Command="{Binding AddTabCommand}"/>
+                <MenuItem Header="_Duplicate Current Tab" InputGestureText="Ctrl+D" Command="{Binding DuplicateTabCommand}"/>
+                <MenuItem Header="_Close Current Tab" InputGestureText="Ctrl+W" Command="{Binding RemoveTabCommandFromMenu}"/>
+            </MenuItem>
+            <MenuItem Header="Help">
+                <MenuItem Header="_How To Decrypt"/>
+                <MenuItem Header="_About"/>
+            </MenuItem>
+        </Menu>
+
+        <TabControl x:Name="tabControl" ItemsSource="{Binding Tabs}" SelectedItem="{Binding SelectedTab}">
+            <TabControl.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Title}"/>
+                </DataTemplate>
+            </TabControl.ItemTemplate>
+            <TabControl.ContentTemplate>
+                <DataTemplate>
+                    <DockPanel>
+                        <local:TabItemCustomControl
+                            Remove="{Binding RemoveTabCommand}"
+                            Undo="{Binding UndoTabCommand}"
+                            Cipher="{Binding CipherText, Mode=TwoWay}"
+                            IsCharDelimChecked="{Binding IsCharDelimiterChecked, Mode=TwoWay}"
+                            CharDelim="{Binding CharDelimiter, Mode=TwoWay}"
+                            IsWordDelimChecked="{Binding IsWordDelimiterChecked, Mode=TwoWay}"
+                            WordDelim="{Binding WordDelimiter, Mode=TwoWay}"
+                            Letters="{Binding Substitutions, Mode=TwoWay}"
+                            Deciphered="{Binding DecryptedText, Mode=TwoWay}"
+                            >
+                        </local:TabItemCustomControl>
+                    </DockPanel>
+                </DataTemplate>
+            </TabControl.ContentTemplate>
+        </TabControl>
+    </DockPanel>
+</Window>
